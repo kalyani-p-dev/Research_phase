@@ -1,0 +1,50 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: StockApp
+  config:
+    import:
+    - configserver:http://localhost:8888
+management:
+  endpoints:
+    web:
+      base-path: /stockapp
+      exposure:
+        include: '*'
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always 
+  tracing:
+    sampling:
+      probability: 1.0     
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      AUTH_TOKEN_VALIDATION:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: localhost   
+         
+
+    
+      
+  #endpoint:
+   #shutdown:
+      #enabled: true  # Enables the shutdown endpoint
